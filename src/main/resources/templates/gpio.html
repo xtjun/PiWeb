@@ -1,0 +1,285 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="common::commonHeader"></head>
+<body>
+<div th:include="common::commonNav"></div>
+<script type="text/javascript">
+    $(function () {
+        refreshAll();
+    });
+    //<c:forEach items="${gpio}" var="item">
+    //刷新单个
+    function refreshData(id) {
+        $.ajax({
+            type: "post",
+            url: "gpio.json",
+            data: {
+                "gpioid": id,
+                "cmd": "get"
+            },
+            timeout: 5000,
+            beforeSend: function () {
+                $.dialog.tips('命令执行中..', 600, 'loading.gif');
+            },
+            success: function (data) {
+                var jsonobjs = eval("(" + data + ")");
+
+                if (jsonobjs.code == "0") {
+
+                    var state = jsonobjs.state;
+                    var mode = jsonobjs.mode;
+
+                    if (mode == "INPUT") {
+                        $("#button_mode_" + id).text("输入");
+                    }
+                    if (mode == "OUTPUT") {
+                        $("#button_mode_" + id).text("输出");
+                    }
+
+                    if (state == "LOW") {
+                        $("#button_status_" + id).text("低电平");
+                    }
+                    if (state == "HIGH") {
+                        $("#button_status_" + id).text("高电平");
+                    }
+
+                } else {
+                    alert(jsonobjs.message);
+                }
+            },
+            complete: function () {
+                $.dialog.tips('命令执行中..', 0.1, 'loading.gif');
+            },
+            error: function () {
+                $.dialog.tips('命令执行中..', 0.1, 'loading.gif');
+                alert("网络请求失败");
+            }
+        });
+    }
+
+    //调整输入输出模式
+    function changeMode(id) {
+        var modestr = $("#button_mode_" + id).text();
+
+        $.ajax({
+            type: "post",
+            url: "gpio.json",
+            data: {
+                "gpioid": id,
+                "cmd": "setmode",
+                "mode": modestr
+            },
+            timeout: 5000,
+            beforeSend: function () {
+                $.dialog.tips('命令执行中..', 600, 'loading.gif');
+            },
+            success: function (data) {
+                var jsonobjs = eval("(" + data + ")");
+
+                if (jsonobjs.code == "0") {
+
+                    var state = jsonobjs.state;
+                    var mode = jsonobjs.mode;
+
+                    if (mode == "INPUT") {
+                        $("#button_mode_" + id).text("输入");
+                    }
+                    if (mode == "OUTPUT") {
+                        $("#button_mode_" + id).text("输出");
+                    }
+
+                    if (state == "LOW") {
+                        $("#button_status_" + id).text("低电平");
+                    }
+                    if (state == "HIGH") {
+                        $("#button_status_" + id).text("高电平");
+                    }
+
+                } else {
+                    alert(jsonobjs.message);
+                }
+            },
+            complete: function () {
+                $.dialog.tips('命令执行中..', 0.1, 'loading.gif');
+            },
+            error: function () {
+                $.dialog.tips('命令执行中..', 0.1, 'loading.gif');
+                alert("网络请求失败");
+            }
+        });
+    }
+
+    //调整电平高低
+    function changeStatus(id) {
+        var modestr = $("#button_mode_" + id).text();
+        var modeStatus = $("#button_status_" + id).text();
+        if (modestr == "输出") {
+            $.ajax({
+                type: "post",
+                url: "gpio.json",
+                data: {
+                    "gpioid": id,
+                    "cmd": "setstate",
+                    "mode": modeStatus
+                },
+                timeout: 5000,
+                beforeSend: function () {
+                    $.dialog.tips('命令执行中..', 600, 'loading.gif');
+                },
+                success: function (data) {
+                    var jsonobjs = eval("(" + data + ")");
+
+                    if (jsonobjs.code == "0") {
+
+                        var state = jsonobjs.state;
+                        var mode = jsonobjs.mode;
+
+                        if (mode == "INPUT") {
+                            $("#button_mode_" + id).text("输入");
+                        }
+                        if (mode == "OUTPUT") {
+                            $("#button_mode_" + id).text("输出");
+                        }
+
+                        if (state == "LOW") {
+                            $("#button_status_" + id).text("低电平");
+                        }
+                        if (state == "HIGH") {
+                            $("#button_status_" + id).text("高电平");
+                        }
+
+                    } else {
+                        alert(jsonobjs.message);
+                    }
+                },
+                complete: function () {
+                    $.dialog.tips('命令执行中..', 0.1, 'loading.gif');
+                },
+                error: function () {
+                    $.dialog.tips('命令执行中..', 0.1, 'loading.gif');
+                    alert("网络请求失败");
+                }
+            });
+        }
+    }
+
+    //全部刷新
+    function refreshAll() {
+
+        $.ajax({
+            type: "post",
+            url: "gpio.json",
+            data: {
+                "cmd": "getall"
+            },
+            timeout: 5000,
+            beforeSend: function () {
+                $.dialog.tips('命令执行中..', 600, 'loading.gif');
+            },
+            success: function (data) {
+                var jsonobjs = eval("(" + data + ")");
+
+                if (jsonobjs.code == "0") {
+
+                    for (var i = 0; i < jsonobjs.allgpio.length; i++) {
+
+                        var gpioname = jsonobjs.allgpio[i].gpioname;
+                        var state = jsonobjs.allgpio[i].state;
+                        var mode = jsonobjs.allgpio[i].mode;
+
+                        if (mode == "INPUT") {
+                            $("#button_mode_" + gpioname).text("输入");
+                        }
+                        if (mode == "OUTPUT") {
+                            $("#button_mode_" + gpioname).text("输出");
+                        }
+                        if (state == "UNKNOW") {
+                            $("#button_mode_" + gpioname).text("未知");
+                        }
+
+                        if (state == "LOW") {
+                            $("#button_status_" + gpioname).text("低电平");
+                        }
+                        if (state == "HIGH") {
+                            $("#button_status_" + gpioname).text("高电平");
+                        }
+                        if (state == "UNKNOW") {
+                            $("#button_status_" + gpioname).text("未知");
+                        }
+                    }
+
+                } else {
+                    alert(jsonobjs.message);
+                }
+            },
+            complete: function () {
+                $.dialog.tips('命令执行中..', 0.1, 'loading.gif');
+            },
+            error: function () {
+                $.dialog.tips('命令执行中..', 0.1, 'loading.gif');
+                alert("网络请求失败");
+            }
+        });
+    }
+</script>
+<div class="panel panel-default">
+    <div class="panel-body">
+        <div class="tab-content">
+            <div class="tab-pane active in" id="panel2">
+                <div class="panel panel-default">
+                    <div class="panel-body">
+
+                        <table class="table table-bordered" style="width: auto">
+                            <thead>
+                            <tr>
+                                <th>编号</th>
+                                <th>模式</th>
+                                <th>状态</th>
+                                <th>操作</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td><label class="control-label">全部</label></td>
+
+                                <td colspan="3">
+                                    <button type="button" class="btn btn-primary" onclick="refreshAll()">刷新</button>
+                                </td>
+                            </tr>
+                            <tr th:each="item : ${gpio}">
+                                <td><label class="control-label" th:text="${item.toString()}"></label></td>
+                                <td>
+                                    <button type="button" class="btn btn-danger"
+                                            th:id="'button_mode_' + ${item.toString()}"
+                                            th:onclick="'changeMode(\''+${item.toString()}+'\')'">
+                                        未知
+                                    </button>
+                                </td>
+                                <td>
+                                    <button type="button" class="btn btn-success"
+                                            th:id="'button_status_' + ${item.toString()}"
+                                            th:onclick="'changeStatus(\''+${item.toString()}+'\')'">
+                                        未知
+                                    </button>
+                                </td>
+                                <td>
+                                    <button type="button" class="btn btn-primary"
+                                            th:id="'button_update_' + ${item.toString()}"
+                                            th:onclick="'refreshData(\''+${item.toString()}+'\')'">
+                                        刷新
+                                    </button>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div th:include="common::commonFooter"></div>
+</body>
+</html>

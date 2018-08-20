@@ -1,0 +1,24 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="common::commonHeader"></head>
+<body>
+<div th:include="common::commonNav"></div>
+<script type="text/javascript">
+    $(document).ready(function () {
+        //自动调整高度
+        function resizeU() {
+            $("#MainContent").height($(window).height() - 90);
+        }
+
+        resizeU();
+        $(window).resize(resizeU);
+    });
+</script>
+<div id="MainContent" style="text-align: center;">
+    <h1>错误!</h1>
+
+    <p th:text="${msg}"></p>
+</div>
+<div th:include="common::commonFooter"></div>
+</body>
+</html>

@@ -1,0 +1,43 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="common::commonHeader"></head>
+<body>
+<div th:include="common::commonNav"></div>
+<div class="panel panel-default">
+    <div class="panel-body">
+        <div class="tab-content">
+            <div class="tab-pane active in" id="panel1">
+                <div class="panel panel-primary">
+                    <div class="panel-body">
+                        <div th:each="group : ${info}" class="panel panel-primary">
+                            <div class="panel-heading">
+                                <h3 class="panel-title" th:text="${group.key}"></h3>
+                            </div>
+                            <div class="panel-body">
+
+                                <table class="table table-bordered table-condensed" id="info" style="width: auto">
+                                    <thead>
+                                    <tr>
+                                        <th>属性</th>
+                                        <th>值</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr th:each="item : ${group.value}">
+                                        <td th:text="${item.key}"></td>
+                                        <td th:text="${item.value}"></td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div th:include="common::commonFooter"></div>
+</body>
+</html>
