@@ -1,7 +1,7 @@
 package cn.xtjun.piweb.controller;
 
 import cn.xtjun.piweb.service.IGpio;
-import cn.xtjun.piweb.service.ISystemInfo;
+import cn.xtjun.piweb.service.ISysInfo;
 import cn.xtjun.piweb.tools.GpioUnit;
 import com.pi4j.io.gpio.GpioPinDigitalMultipurpose;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,18 +24,19 @@ public class MainController {
     @Autowired
     private IGpio iGpio;
     @Autowired
-    private ISystemInfo iSystemInfo;
+    private ISysInfo iSysInfo;
 
 
     @RequestMapping(method = RequestMethod.GET, value = "/")
     public String index(ModelMap model) throws IOException {
+        GpioUnit instance = GpioUnit.getInstance();
         return info(model);
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/info")
     public String info(ModelMap model) {
         try {
-            model.addAttribute("info", iSystemInfo.getSystemInfo());
+            model.addAttribute("info", iSysInfo.getSystemInfo());
             return "info";
         } catch (Exception e) {
             model.addAttribute("msg", e.toString());
